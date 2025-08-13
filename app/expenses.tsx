@@ -1,11 +1,15 @@
 import React, { useState } from 'react';
-import { View, Text, FlatList, Button, StyleSheet, Pressable } from 'react-native';
+import { View, Text, FlatList, StyleSheet, Pressable, ViewStyle, TextStyle, useColorScheme } from 'react-native';
 import DateTimePicker from '@react-native-community/datetimepicker';
 import { Picker } from '@react-native-picker/picker';
 import { monthNames } from '../src/utils/months';
 import { categories } from '../src/utils/categories';
+import { theme, darkTheme } from '../src/utils/theme';
 
 export default function ExpensesScreen() {
+  const scheme = useColorScheme();
+  const currentTheme = scheme === 'dark' ? darkTheme : theme;
+
   const gastos = [
     { id: '1', nome: 'McDonnalds', categoria: 'Alimentação', valor: 35.0, data: '10/08' },
     { id: '2', nome: 'Ida para o trabalho', categoria: 'Transporte', valor: 90.0, data: '09/08' },
@@ -30,10 +34,10 @@ export default function ExpensesScreen() {
   });
 
   return (
-    <View style={styles.container}>
+    <View style={[styles.container, { backgroundColor: currentTheme.colors.background }]}>  
       <View style={styles.filtersContainer}>
-        <Pressable onPress={() => setShowDatePicker(true)} style={styles.datePickerButton}>
-          <Text style={styles.datePickerText}>
+        <Pressable onPress={() => setShowDatePicker(true)} style={[styles.datePickerButton, { backgroundColor: currentTheme.colors.background }] }>
+          <Text style={[styles.datePickerText, { color: currentTheme.colors.text }]}>
             {`${monthNames[selectedDate.getMonth()]}/${selectedDate.getFullYear()}`}
           </Text>
         </Pressable>
@@ -51,7 +55,7 @@ export default function ExpensesScreen() {
         <Picker
           selectedValue={selectedCategory}
           onValueChange={setSelectedCategory}
-          style={styles.picker}
+          style={[styles.picker, { color: currentTheme.colors.text }]}
         >
           {categoryOptions.map(cat => (
             <Picker.Item key={cat} label={cat} value={cat} />
@@ -63,31 +67,62 @@ export default function ExpensesScreen() {
         keyExtractor={item => item.id}
         renderItem={({ item }) => (
           <View style={styles.card}>
-            <Text style={styles.cardText}>
+            <Text style={[styles.cardText, { color: currentTheme.colors.text }] }>
               {categories.find(c => c.name === item.categoria)?.emoji} {item.nome} - R$ {item.valor.toFixed(2)}
             </Text>
-            <Text>{item.data}</Text>
+            <Text style={{ color: currentTheme.colors.text }}>{item.data}</Text>
           </View>
         )}
       />
       {/* Botão customizado para adicionar gasto */}
-      <Pressable style={styles.addButton} onPress={() => {}}
+      <Pressable style={[styles.addButton, { backgroundColor: currentTheme.colors.primary }]} onPress={() => {}}
         android_ripple={{ color: '#FFF' }}
       >
-        <Text style={styles.addButtonText}>Adicionar Gasto</Text>
+        <Text style={[styles.addButtonText, { color: currentTheme.colors.background }]}>Adicionar Gasto</Text>
       </Pressable>
     </View>
   );
 }
 
-const styles = StyleSheet.create({
-  container: { flex: 1, padding: 20 },
-  filtersContainer: { flexDirection: 'row', justifyContent: 'space-between', marginBottom: 10 },
+const styles = StyleSheet.create<{ container: ViewStyle;
+  filtersContainer: ViewStyle;
+  picker: TextStyle;
+  datePickerButton: ViewStyle;
+  datePickerText: TextStyle;
+  card: ViewStyle;
+  cardText: TextStyle;
+  addButton: ViewStyle;
+  addButtonText: TextStyle;
+}>({
+  container: { flex: 1, padding: theme.layout.spacing * 2 },
+  filtersContainer: { flexDirection: 'row', justifyContent: 'space-between', marginBottom: theme.layout.spacing },
   picker: { flex: 1 },
-  datePickerButton: { flex: 1, justifyContent: 'center', alignItems: 'center', padding: 8, backgroundColor: '#eaeaea', borderRadius: 5, marginRight: 8 },
-  datePickerText: { fontSize: 16 },
-  card: { padding: 15, backgroundColor: '#f5f5f5', marginBottom: 10, borderRadius: 10 },
-  cardText: { fontSize: 16, marginBottom: 4 },
-  addButton: { backgroundColor: '#4CAF50', paddingVertical: 12, paddingHorizontal: 16, borderRadius: 5, alignItems: 'center', justifyContent: 'center', marginTop: 10, marginBottom: 10 },
-  addButtonText: { color: '#fff', fontSize: 16, fontWeight: '600' },
+  datePickerButton: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+    padding: theme.layout.spacing,
+    borderRadius: theme.layout.borderRadius,
+    marginRight: theme.layout.spacing,
+  },
+  datePickerText: { fontFamily: theme.typography.fontFamily, fontSize: theme.typography.fontSizes.body },
+  card: {
+    padding: theme.layout.spacing * 2,
+    backgroundColor: '#fff',
+    marginBottom: theme.layout.spacing * 2,
+    borderRadius: theme.layout.borderRadius,
+    ...theme.shadows.card,
+  },
+  cardText: { fontFamily: theme.typography.fontFamily, fontSize: theme.typography.fontSizes.body, marginBottom: theme.layout.spacing / 2 },
+  addButton: {
+    backgroundColor: theme.colors.primary,
+    paddingVertical: theme.layout.spacing * 1.5,
+    paddingHorizontal: theme.layout.spacing * 2,
+    borderRadius: theme.layout.borderRadius,
+    alignItems: 'center',
+    justifyContent: 'center',
+    marginTop: theme.layout.spacing * 2,
+    marginBottom: theme.layout.spacing * 2
+  },
+  addButtonText: { color: '#fff', fontFamily: theme.typography.fontFamily, fontSize: theme.typography.fontSizes.body, fontWeight: theme.typography.fontWeights.semiBold as TextStyle['fontWeight'] },
 });
