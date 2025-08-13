@@ -1,59 +1,92 @@
-import FontAwesome from '@expo/vector-icons/FontAwesome';
-import { DarkTheme, DefaultTheme, ThemeProvider } from '@react-navigation/native';
-import { useFonts } from 'expo-font';
-import { Stack } from 'expo-router';
-import * as SplashScreen from 'expo-splash-screen';
-import { useEffect } from 'react';
-import 'react-native-reanimated';
+import { Drawer } from 'expo-router/drawer';
+import { Ionicons } from '@expo/vector-icons';
+import { Pressable, View } from 'react-native';
+import { StatusBar } from 'expo-status-bar';
 
-import { useColorScheme } from '@/components/useColorScheme';
-
-export {
-  // Catch any errors thrown by the Layout component.
-  ErrorBoundary,
-} from 'expo-router';
-
-export const unstable_settings = {
-  // Ensure that reloading on `/modal` keeps a back button present.
-  initialRouteName: '(tabs)',
-};
-
-// Prevent the splash screen from auto-hiding before asset loading is complete.
-SplashScreen.preventAutoHideAsync();
-
-export default function RootLayout() {
-  const [loaded, error] = useFonts({
-    SpaceMono: require('../assets/fonts/SpaceMono-Regular.ttf'),
-    ...FontAwesome.font,
-  });
-
-  // Expo Router uses Error Boundaries to catch errors in the navigation tree.
-  useEffect(() => {
-    if (error) throw error;
-  }, [error]);
-
-  useEffect(() => {
-    if (loaded) {
-      SplashScreen.hideAsync();
-    }
-  }, [loaded]);
-
-  if (!loaded) {
-    return null;
-  }
-
-  return <RootLayoutNav />;
-}
-
-function RootLayoutNav() {
-  const colorScheme = useColorScheme();
-
+export default function Layout() {
   return (
-    <ThemeProvider value={colorScheme === 'dark' ? DarkTheme : DefaultTheme}>
-      <Stack>
-        <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
-        <Stack.Screen name="modal" options={{ presentation: 'modal' }} />
-      </Stack>
-    </ThemeProvider>
+    <>
+      <StatusBar style="dark"/>
+      <Drawer
+        screenOptions={{
+          headerStyle: { backgroundColor: '#fff', elevation: 0, shadowOpacity: 0 },
+          headerTintColor: '#000',
+          drawerActiveTintColor: '#4CAF50',
+          drawerLabelStyle: { fontSize: 15 },
+          swipeEnabled: true,
+          drawerType: 'front',
+          sceneStyle: { backgroundColor: '#f8f9fa' },
+        }}
+      >
+        <Drawer.Screen
+          name="index"
+          options={{
+            title: '',
+            drawerLabel: 'Home',
+            drawerIcon: ({ color, size }: { color: string; size: number }) => (
+              <Ionicons name="home-outline" size={size} color={color} />
+            ),
+          }}
+        />
+        <Drawer.Screen
+          name="expenses"
+          options={{
+            title: 'Gastos',
+            drawerLabel: 'Gastos',
+            drawerIcon: ({ color, size }: { color: string; size: number }) => (
+              <Ionicons name="wallet-outline" size={size} color={color} />
+            ),
+            headerRight: () => (
+              <View style={{ flexDirection: 'row', gap: 12, paddingRight: 8 }}>
+                <Pressable
+                  hitSlop={8}
+                  onPress={() => {
+                    // TODO: abrir modal de novo gasto
+                  }}
+                >
+                  {({ pressed }) => (
+                    <Ionicons
+                      name="add-circle-outline"
+                      size={24}
+                      color="#fff"
+                      style={{ opacity: pressed ? 0.6 : 1 }}
+                    />
+                  )}
+                </Pressable>
+              </View>
+            ),
+          }}
+        />
+        <Drawer.Screen
+          name="categories"
+          options={{
+            title: 'Categorias',
+            drawerLabel: 'Categorias',
+            drawerIcon: ({ color, size }: { color: string; size: number }) => (
+              <Ionicons name="pricetags-outline" size={size} color={color} />
+            ),
+            headerRight: () => (
+              <View style={{ flexDirection: 'row', gap: 12, paddingRight: 8 }}>
+                <Pressable
+                  hitSlop={8}
+                  onPress={() => {
+                    // TODO: abrir modal de nova categoria
+                  }}
+                >
+                  {({ pressed }) => (
+                    <Ionicons
+                      name="add-circle-outline"
+                      size={24}
+                      color="#fff"
+                      style={{ opacity: pressed ? 0.6 : 1 }}
+                    />
+                  )}
+                </Pressable>
+              </View>
+            ),
+          }}
+        />
+      </Drawer>
+    </>
   );
 }
