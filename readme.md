@@ -18,7 +18,7 @@ Este aplicativo mobile, desenvolvido com React Native e Expo Router, oferece uma
 ## ⚙️ Instalação e Execução
 ```bash
 # Clone este repositório
-git clone https://github.com/seu-usuario/my-finance-app.git
+git clone https://github.com/Ddiegoreis/my-finance-app.git
 cd my-finance-app
 
 # Instale as dependências
